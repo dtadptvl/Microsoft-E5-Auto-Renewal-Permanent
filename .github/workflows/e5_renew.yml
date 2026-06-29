@@ -28,7 +28,6 @@ jobs:
       - name: Chạy script gia hạn E5
         env:
           E5_CLIENT_ID: ${{ secrets.E5_CLIENT_ID }}
-          E5_CLIENT_SECRET: ${{ secrets.E5_CLIENT_SECRET }}
           E5_REFRESH_TOKEN: ${{ secrets.E5_REFRESH_TOKEN }}
         run: python run_e5.py
 
