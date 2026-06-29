@@ -16,7 +16,6 @@ async def main():
             'grant_type': 'refresh_token',
             'refresh_token': REFRESH_TOKEN,
             'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
             'redirect_uri': 'http://localhost:53682/'
         }
         
