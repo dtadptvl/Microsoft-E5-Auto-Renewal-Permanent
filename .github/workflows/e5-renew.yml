@@ -2,7 +2,7 @@ name: Auto Renew E5 (Caduceus) - Set & Forget
 
 on:
   schedule:
-    - cron: '30 2,14 * * *' # Chạy tự động 2 lần/ngày
+    - cron: '30 2,14 * * *'
   workflow_dispatch:
 
 jobs:
@@ -39,7 +39,6 @@ jobs:
           -H "Content-Type: application/json" \
           -d "{\"password\": \"$E5_WEB_APP_PASSWORD\"}"
           
-        # Đợi 90 giây cho server gọi xong toàn bộ API của Microsoft
         sleep 90
 
     - name: Update Refresh Token to GitHub Secrets
@@ -48,7 +47,6 @@ jobs:
       run: |
         if [ -f new_token.txt ]; then
           NEW_TOKEN=$(cat new_token.txt)
-          # Sử dụng Github CLI để ghi đè Secret
           gh secret set REFRESH_TOKEN -b"$NEW_TOKEN" --repo ${{ github.repository }}
           echo "✅ Đã cập nhật Refresh Token mới vào Github Secrets thành công! Trượt hạn thêm 90 ngày."
         else
