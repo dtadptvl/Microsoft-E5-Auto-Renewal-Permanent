@@ -1,0 +1,44 @@
+name: Microsoft E5 Auto Renew
+
+on:
+  schedule:
+    # Chạy 5 lần một ngày vào các khung giờ (UTC): 0h, 4h, 9h, 14h, 19h
+    - cron: '0 0,4,9,14,19 * * *'
+  workflow_dispatch: # Cho phép bạn bấm chạy bằng tay trên GitHub
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài đặt Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Cài đặt thư viện
+        run: pip install httpx
+
+      - name: Chờ ngẫu nhiên để tránh bot detection
+        # Sẽ dừng ngẫu nhiên từ 0 đến 1800 giây (30 phút) trước khi chạy script
+        run: sleep $((RANDOM % 1800))
+
+      - name: Chạy script gia hạn E5
+        env:
+          E5_CLIENT_ID: ${{ secrets.E5_CLIENT_ID }}
+          E5_CLIENT_SECRET: ${{ secrets.E5_CLIENT_SECRET }}
+          E5_REFRESH_TOKEN: ${{ secrets.E5_REFRESH_TOKEN }}
+        run: python run_e5.py
+
+      - name: Cập nhật lại Refresh Token mới vào GitHub Secrets
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -f new_refresh_token.txt ]; then
+            NEW_TOKEN=$(cat new_refresh_token.txt)
+            # Dùng GitHub CLI để tự động update secret
+            gh secret set E5_REFRESH_TOKEN --body "$NEW_TOKEN"
+            echo "Đã cập nhật Refresh Token mới thành công!"
+          fi
