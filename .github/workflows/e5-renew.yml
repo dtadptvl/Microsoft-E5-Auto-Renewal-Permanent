@@ -1,4 +1,4 @@
-name: Auto Renew E5 (Caduceus) - Set & Forget
+name: Auto Renew E5 (Caduceus) - Final
 
 on:
   schedule:
@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     env:
       E5_CLIENT_ID: ${{ secrets.CLIENT_ID }}
       E5_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
@@ -17,39 +16,26 @@ jobs:
       PORT: 8080
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with: {python-version: '3.10'}
+    - run: |
         pip install uvicorn quart httpx
-
-    - name: Run Server and Trigger API
-      run: |
         python main.py &
         sleep 15
-        
         curl -X POST http://127.0.0.1:8080/call \
           -H "Content-Type: application/json" \
           -d "{\"password\": \"$E5_WEB_APP_PASSWORD\"}"
-          
-        sleep 90
-
-    - name: Update Refresh Token to GitHub Secrets
+        sleep 30
+        
+    - name: Update Refresh Token
       env:
         GH_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         if [ -f new_token.txt ]; then
-          NEW_TOKEN=$(cat new_token.txt)
-          gh secret set REFRESH_TOKEN -b"$NEW_TOKEN" --repo ${{ github.repository }}
-          echo "✅ Đã cập nhật Refresh Token mới vào Github Secrets thành công! Trượt hạn thêm 90 ngày."
+          gh secret set REFRESH_TOKEN -b"$(cat new_token.txt)" --repo ${{ github.repository }}
+          echo "✅ Token updated successfully!"
         else
-          echo "❌ Không tìm thấy file token mới. Vui lòng kiểm tra lại!"
+          echo "❌ new_token.txt not found. Check logs above."
           exit 1
         fi
