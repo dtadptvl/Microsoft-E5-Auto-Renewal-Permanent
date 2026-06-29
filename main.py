@@ -81,7 +81,7 @@ class ErrorHandler:
 
 class RouteHandler:
     def __init__(self, instance: Quart):
-    
+        
         @instance.route('/')
         async def home():
             return WebServer.stats, 200
