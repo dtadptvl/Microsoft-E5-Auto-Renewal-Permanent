@@ -2,8 +2,8 @@ name: Microsoft E5 Auto Renew
 
 on:
   schedule:
-    # Chạy 5 lần một ngày vào các khung giờ (UTC): 0h, 4h, 9h, 14h, 19h
-    - cron: '0 0,4,9,14,19 * * *'
+    # Chạy mỗi tiếng 1 lần
+    - cron: '0 * * * *'
   workflow_dispatch: # Cho phép bạn bấm chạy bằng tay trên GitHub
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
 
       - name: Chờ ngẫu nhiên để tránh bot detection
         # Sẽ dừng ngẫu nhiên từ 0 đến 1800 giây (30 phút) trước khi chạy script
-        run: sleep $((RANDOM % 1800))
+        run: sleep $((RANDOM % 300))
 
       - name: Chạy script gia hạn E5
         env:
