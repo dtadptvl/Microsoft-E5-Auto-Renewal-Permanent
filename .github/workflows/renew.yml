@@ -2,8 +2,8 @@ name: E5 Public Client Renew
 
 on:
   schedule:
-    # Chạy vào phút 15 của mỗi 2 tiếng (ví dụ: 0:15, 2:15, 4:15...)
-    - cron: '15 */2 * * *'
+    # Chạy 3 lần một ngày, khung giờ tản ra để tránh bị quét
+    - cron: '15 2,10,18 * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Random Delay
-        run: sleep $((RANDOM % 500))
+        run: sleep $((RANDOM % 1800))
 
       - name: Setup Python
         uses: actions/setup-python@v4
