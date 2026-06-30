@@ -1,0 +1,32 @@
+name: E5 Public Client Renew
+
+on:
+  schedule:
+    # Chạy vào phút 15 của mỗi 2 tiếng (ví dụ: 0:15, 2:15, 4:15...)
+    - cron: '15 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-auto-renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Random Delay
+        run: sleep $((RANDOM % 100))
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Cài đặt thư viện
+        run: pip install requests pynacl
+
+      - name: Chạy kịch bản
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python auto_renew.py
